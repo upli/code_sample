@@ -1,0 +1,22 @@
+{% extends 'hippo_base.html' %}
+
+{%- block content %}
+    {% block main %}{% endblock %}
+{% endblock -%}
+
+{% block modules_css %}
+{{ super() }}
+{% endblock %}
+
+{% block modules_js -%}
+{{ super() }}
+<script src="{{ url_for('.static', filename='js/hospitalizations_common.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/event_common.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/event.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/modal_hosp_info.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/modal_edit_moving.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/modal_moving_transfer.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/modal_moving_close.js', v=app_version) }}"></script>
+<script src="{{ url_for('event.static', filename='js/modal_hosp_close.js', v=app_version) }}"></script>
+<script src="{{ url_for('accounting.static', filename='js/accounting.js', v=app_version) }}"></script>
+{%- endblock %}

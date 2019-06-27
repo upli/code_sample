@@ -1,0 +1,14 @@
+{% extends 'hippo_base.html' %}
+
+{%- block content %}
+    {% block main %}{% endblock %}
+{% endblock -%}
+
+{% block modules_css %}
+{{ super() }}
+{% endblock %}
+
+{% block modules_js -%}
+{{ super() }}
+<script src="{{ url_for('.static', filename='js/hospitalizations_common.js', v=app_version) }}"></script>
+{%- endblock %}

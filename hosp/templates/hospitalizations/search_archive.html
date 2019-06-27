@@ -1,0 +1,105 @@
+{% extends 'hospitalizations/base_archive.html' %}
+
+{% block title %}Контроль качества{% endblock %}
+
+{% block main %}
+<div ng-controller="EventArchiveCtrl" class="ng-cloak">
+    <section class="content-header">
+        <h1>Контроль качества</h1>
+        <div class="breadcrumb novpadding">
+            <ui-print-button ps="ps_elist" lazy-load-context="event_archive_list" class="pull-right"
+                resolve="ps_elist_resolve()"></ui-print-button>
+        </div>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="start_dt">Дата начала</label>
+                <wm-date ng-model="filter.start_date" max-date="filter.end_date"></wm-date>
+            </div>
+            <div class="col-md-3">
+                <label for="end_dt">Дата окончания</label>
+                <wm-date ng-model="filter.end_date" min-date="filter.start_date"></wm-date>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <div>
+                    <label>
+                        <wm-checkbox select-all="archiveSelect" key="'filterNotInArchive'" after-toggle="onCheckBoxChanged()">
+                        </wm-checkbox> История болезни не сдана
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row marginal">
+            <div class="col-md-3">
+                <label for="filter-client">ФИО пациента</label>
+                <ui-select id="filter-client" ng-model="filter.client" ext-select-client-search theme="select2"
+                    allow-clear="true" placeholder="Поиск пациента" ng-change="onChangeClient()">
+                </ui-select>
+            </div>
+            <div class="col-md-3">
+                <label for="filter-external-id">№ ИБ</label>
+                <input type="text" class="form-control" ng-model="filter.external_id" ng-change="onChangeExternalId()">
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <div>
+                    <label style="margin-right: 20px" ng-repeat="req_type in request_types">
+                        <wm-checkbox select-all="reqTypeSelect" key="req_type.code" after-toggle="onCheckBoxChanged()">
+                        </wm-checkbox> [[ req_type.name ]]
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="box box-info">
+            <div class="box-body">
+                <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Архив</th>
+                        <th width="10%">№ ИБ</th>
+                        <th width="20%">ФИО пациента</th>
+                        <th width="10%">Возраст</th>
+                        <th width="10%">Дата госп-ии</th>
+                        <th width="10%">Дата выписки</th>
+                        <th width="10%">Отделение</th>
+                        <th width="10%">Койко-дни</th>
+                        <th>КК</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="hosp in hosp_list">
+                        <td><wm-checkbox select-all="selectedRecords" key="hosp.id" after-toggle="onChangeArchiveStatus(hosp.id)"></wm-checkbox></td>
+                        <td><a ng-href="[[ getEventUrl(hosp.id) ]]">[[ hosp.external_id ]]</a></td>
+                        <td><a ng-href="[[ getClientUrl(hosp.client.id) ]]">[[ hosp.client.full_name ]]</a></td>
+                        <td>[[ hosp.client.birth_date | asDate ]] ([[ hosp.client.age ]])</td>
+                        <td>[[ hosp.set_date | asDate ]]</td>
+                        <td>[[ hosp.exec_date | asDate ]]</td>
+                        <td>[[ hosp.org_struct_name ]]</td>
+                        <td>[[ hosp.hb_days ]]</td>
+                        <td>
+                            <a href="#" ng-click="openQualityControl(hosp)" >
+                                <span glyph-ok-remove="isActionFinished(hosp.quality_control)" glyph-tooltip="[[ isActionFinished(hosp.quality_control) ? 'Заполнена' : 'Не заполнена' ]]"></span>
+                                <b>[[ hosp.quality_control.id ? 'Открыть' : 'Добавить' ]]</b>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="box-footer clearfix">
+                <pagination ng-model="pager.current_page" total-items="pager.pages" items-per-page="1"
+                    max-size="pager.max_pages" ng-change="onPageChanged()" ng-show="pager.pages > 1" boundary-links="true"
+                    class="pagination pagination-sm no-margin">
+                </pagination>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+{% block modules_js %}
+    {{ super() }}
+    <script src="{{ url_for('.static', filename='js/search_archive.js', v=app_version) }}"></script>
+{% endblock %}
